@@ -12,15 +12,6 @@ import (
 	"strings"
 )
 
-// @Summary Get user profile
-// @Description Returns the authenticated user's data
-// @Tags User
-// @Accept json
-// @Produce json
-// @Param Authorization header string true "Bearer Token"
-// @Success 200 {object} models.User
-// @Failure 401 {object} map[string]string "Unauthorized"
-// @Router /me [get]
 func GetUserInformation(c *gin.Context) {
 	// Extract the Authorization header
 	authHeader := c.GetHeader("Authorization")
@@ -61,15 +52,6 @@ func GetUserInformation(c *gin.Context) {
 	})
 }
 
-// @Summary Update user profile
-// @Description Allows an authenticated user to update their full name and/or profile image
-// @Tags User
-// @Accept multipart/form-data
-// @Produce json
-// @Param Authorization header string true "Bearer Token"
-// @Param full_name formData string false "New Full Name"
-// @Param image formData file false "New Profile Image"
-// @Router /user/update [put]
 func UpdateUser(c *gin.Context) {
 	// Extract Authorization token
 	authHeader := c.GetHeader("Authorization")

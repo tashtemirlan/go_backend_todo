@@ -15,18 +15,6 @@ import (
 	"time"
 )
 
-// @Summary Вход пользователя
-// @Description Logs in a user and returns JWT
-// @Tags Auth
-// @Accept  json
-// @Accept  multipart/form-data
-// @Produce  json
-// @Param email formData string false "Email"
-// @Param password formData string false "Password"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} map[string]string "Invalid request"
-// @Failure 401 {object} map[string]string "Invalid credentials"
-// @Router /login [post]
 func Login(c *gin.Context) {
 	var request map[string]string
 
@@ -69,18 +57,6 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
-// @Summary Регистрация пользователя
-// @Description Registers a new user
-// @Tags Auth
-// @Accept multipart/form-data
-// @Produce json
-// @Param full_name formData string true "Full Name"
-// @Param email formData string true "Email"
-// @Param password formData string true "Password"
-// @Param image formData file false "Profile Image"  // Make the image parameter optional
-// @Success 201 {object} models.User
-// @Failure 400 {object} map[string]string "Invalid input"
-// @Router /signup [post]
 func Signup(c *gin.Context) {
 	var request struct {
 		FullName string `json:"full_name"`
@@ -157,13 +133,6 @@ func GenerateRandomCode() string {
 	return fmt.Sprintf("%06d", rand.Intn(1000000))
 }
 
-// @Summary Send password reset code
-// @Description Sends a 6-digit reset code to the user's email.
-// @Tags Auth
-// @Accept multipart/form-data
-// @Produce json
-// @Param email formData string true "User's email"
-// @Router /forgetpassword/sendCode [post]
 func SendResetCode(c *gin.Context) {
 	var request struct {
 		Email string `json:"email"`
@@ -190,14 +159,6 @@ func SendResetCode(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": resetCode})
 }
 
-// @Summary Reset user password
-// @Description Resets the user's password using only email and new password (no code required).
-// @Tags Auth
-// @Accept multipart/form-data
-// @Produce json
-// @Param email formData string true "User's email"
-// @Param password formData string true "New password"
-// @Router /forgetpassword/resetPassword [post]
 func ResetPassword(c *gin.Context) {
 	var request struct {
 		Email    string `json:"email"`
