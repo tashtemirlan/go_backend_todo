@@ -39,4 +39,12 @@ func SetupRoutes(r *gin.Engine) {
 		apiTaskGroup.PUT("/updateTaskGroup/:id", controllers.UpdateTaskGroup)
 		apiTaskGroup.DELETE("/deleteTaskGroup/:id", controllers.DeleteTaskGroup)
 	}
+	apiTask := r.Group("/api/tasks")
+	{
+		apiTask.POST("/createTask", controllers.CreateTask)
+		apiTask.GET("/getAllTasks", controllers.GetAllTasks)
+		apiTask.GET("/getTask/:id", controllers.GetTask)
+		apiTask.PUT("/updateTask/:id", controllers.UpdateTask)
+		apiTask.DELETE("/deleteTask/:id", controllers.DeleteTask)
+	}
 }
