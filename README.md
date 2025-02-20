@@ -40,7 +40,7 @@ CREATE DATABASE material_todo_go;
 go mod tidy
 ```
 
-🔹 Start the Server
-```go
-go run main.go
+🔹 Build & Start Containers
+```sh
+docker-compose up --build -d
 ```
