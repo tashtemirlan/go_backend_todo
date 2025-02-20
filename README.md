@@ -35,12 +35,6 @@ CREATE DATABASE material_todo_go;
 ```
 
 ### 🛠️ Running the Project
-🔹 Install Dependencies
-```go
-go mod tidy
-```
-
-🔹 Build & Start Containers
 ```sh
 docker-compose up --build -d
 ```
