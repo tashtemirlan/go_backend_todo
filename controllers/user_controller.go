@@ -151,10 +151,5 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	// Return updated user data
-	c.JSON(http.StatusOK, gin.H{
-		"id":        user.ID,
-		"full_name": user.FullName,
-		"email":     user.Email,
-		"image":     user.Image,
-	})
+	c.JSON(http.StatusOK, gin.H{})
 }

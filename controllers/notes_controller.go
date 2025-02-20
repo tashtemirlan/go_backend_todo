@@ -1,14 +1,10 @@
 package controllers
 
 import (
-	"errors"
+	"github.com/gin-gonic/gin"
 	"material_todo_go/database"
 	"material_todo_go/models"
-	"material_todo_go/utils"
 	"net/http"
-	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
 // CreateNote - Adds a new note for the authenticated user
@@ -31,7 +27,7 @@ func CreateNote(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, note)
+	c.JSON(http.StatusCreated, gin.H{})
 }
 
 // GetAllNotes - Retrieves all notes for the authenticated user
@@ -108,7 +104,7 @@ func UpdateNote(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, note)
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 // DeleteNote - Deletes a note for the authenticated user
@@ -125,30 +121,4 @@ func DeleteNote(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Note deleted successfully"})
-}
-
-// getAuthenticatedUserID extracts user ID from the JWT token
-func getAuthenticatedUserID(c *gin.Context) (uint, error) {
-	authHeader := c.GetHeader("Authorization")
-	if authHeader == "" {
-		return 0, errors.New("Authorization token required")
-	}
-
-	parts := strings.Split(authHeader, " ")
-	if len(parts) != 2 || parts[0] != "Bearer" {
-		return 0, errors.New("Invalid Authorization header format")
-	}
-
-	email, err := utils.ParseJWT(parts[1])
-	if err != nil {
-		return 0, errors.New("Invalid token")
-	}
-
-	// Retrieve user ID based on email
-	var user models.User
-	if err := database.DB.Where("email = ?", email).First(&user).Error; err != nil {
-		return 0, errors.New("User not found")
-	}
-
-	return user.ID, nil
 }

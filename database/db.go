@@ -34,4 +34,5 @@ func ConnectDB() {
 	fmt.Println("✅ Successfully connected to PostgreSQL!")
 	DB.AutoMigrate(&models.User{})
 	DB.AutoMigrate(&models.Note{})
+	DB.AutoMigrate(&models.TaskGroup{})
 }
