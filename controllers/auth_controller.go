@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"material_todo_go/database"
@@ -10,6 +11,7 @@ import (
 	"net/http"
 	_ "os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -146,12 +148,7 @@ func Signup(c *gin.Context) {
 	}
 
 	// Return the created user (excluding password)
-	c.JSON(http.StatusCreated, gin.H{
-		"id":        user.ID,
-		"full_name": user.FullName,
-		"email":     user.Email,
-		"image":     user.Image,
-	})
+	c.JSON(http.StatusCreated, gin.H{})
 }
 
 // GenerateRandomCode generates a 6-digit random code
@@ -190,7 +187,7 @@ func SendResetCode(c *gin.Context) {
 	// Store the reset code in the database (optional)
 	// You may store this in a `password_resets` table if needed.
 
-	c.JSON(http.StatusOK, gin.H{"message": "Reset code generated", "code": resetCode})
+	c.JSON(http.StatusOK, gin.H{"code": resetCode})
 }
 
 // @Summary Reset user password
@@ -232,5 +229,31 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Password updated successfully"})
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+// getAuthenticatedUserID extracts user ID from the JWT token
+func getAuthenticatedUserID(c *gin.Context) (uint, error) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		return 0, errors.New("Authorization token required")
+	}
+
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		return 0, errors.New("Invalid Authorization header format")
+	}
+
+	email, err := utils.ParseJWT(parts[1])
+	if err != nil {
+		return 0, errors.New("Invalid token")
+	}
+
+	// Retrieve user ID based on email
+	var user models.User
+	if err := database.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		return 0, errors.New("User not found")
+	}
+
+	return user.ID, nil
 }

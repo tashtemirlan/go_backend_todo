@@ -31,4 +31,12 @@ func SetupRoutes(r *gin.Engine) {
 		apiNotes.PUT("/updateNote/:id", controllers.UpdateNote)
 		apiNotes.DELETE("/deleteNote/:id", controllers.DeleteNote)
 	}
+	apiTaskGroup := r.Group("/api/tasks_groups")
+	{
+		apiTaskGroup.POST("/createTaskGroup", controllers.CreateTaskGroup)
+		apiTaskGroup.GET("/getTasksGroup", controllers.GetTaskGroups)
+		apiTaskGroup.GET("/getTaskGroup/:id", controllers.GetTaskGroup)
+		apiTaskGroup.PUT("/updateTaskGroup/:id", controllers.UpdateTaskGroup)
+		apiTaskGroup.DELETE("/deleteTaskGroup/:id", controllers.DeleteTaskGroup)
+	}
 }
