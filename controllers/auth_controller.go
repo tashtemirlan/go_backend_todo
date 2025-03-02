@@ -58,25 +58,10 @@ func Login(c *gin.Context) {
 }
 
 func Signup(c *gin.Context) {
-	var request struct {
-		FullName string `json:"full_name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-
-	var fullName, email, password string
-
-	// Try JSON binding first
-	if err := c.ShouldBindJSON(&request); err == nil {
-		fullName = request.FullName
-		email = request.Email
-		password = request.Password
-	} else {
-		// If JSON binding fails, fallback to form-data
-		fullName = c.PostForm("full_name")
-		email = c.PostForm("email")
-		password = c.PostForm("password")
-	}
+	// Get form data
+	fullName := c.PostForm("full_name")
+	email := c.PostForm("email")
+	password := c.PostForm("password")
 
 	// Validate required fields
 	if fullName == "" || email == "" || password == "" {
@@ -84,22 +69,17 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	// Default image if not uploaded
-	defaultImagePath := "uploads/default_avatar.png"
-	var filePath string
-
-	// Handle file upload
+	// Handle file upload (optional)
+	filePath := "uploads/default_avatar.png" // Default avatar
 	file, err := c.FormFile("image")
 	if err == nil {
-		// Save the file
+		// Save uploaded image
 		filePath = filepath.Join("uploads", file.Filename)
+		filePath = strings.Replace(filePath, "\\", "/", -1) // Ensure forward slashes
 		if err := c.SaveUploadedFile(file, filePath); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
 			return
 		}
-	} else {
-		// Use default image if no file was uploaded
-		filePath = defaultImagePath
 	}
 
 	// Hash password
@@ -109,7 +89,7 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	// Create user struct
+	// Create user model
 	user := models.User{
 		FullName: fullName,
 		Email:    email,
@@ -117,13 +97,13 @@ func Signup(c *gin.Context) {
 		Image:    filePath,
 	}
 
-	// Save user in the database
+	// Save user to database
 	if err := database.DB.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
-	// Return the created user (excluding password)
+	// Return success response
 	c.JSON(http.StatusCreated, gin.H{})
 }
 
@@ -217,4 +197,34 @@ func getAuthenticatedUserID(c *gin.Context) (uint, error) {
 	}
 
 	return user.ID, nil
+}
+
+func ValidateToken(c *gin.Context) {
+	// Get token from request (could be sent via body, query, or header)
+	token := c.PostForm("token")
+	if token == "" {
+		token = c.Query("token") // Optional: allows token in query params
+	}
+	if token == "" {
+		authHeader := c.GetHeader("Authorization")
+		parts := strings.Split(authHeader, " ")
+		if len(parts) == 2 && parts[0] == "Bearer" {
+			token = parts[1]
+		}
+	}
+
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Token is required"})
+		return
+	}
+
+	// Validate the JWT token
+	_, err := utils.ParseJWT(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	// Token is valid — respond with the decoded user info
+	c.JSON(http.StatusOK, gin.H{})
 }

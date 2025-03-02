@@ -12,6 +12,7 @@ func SetupRoutes(r *gin.Engine) {
 		apiLogin.POST("/signup", controllers.Signup)
 		apiLogin.POST("/forget-password/generateCode", controllers.SendResetCode)
 		apiLogin.POST("/forget-password/changePassword", controllers.ResetPassword)
+		apiLogin.POST("/validate-token", controllers.ValidateToken)
 	}
 	apiPolicy := r.Group("/api/documents")
 	{
