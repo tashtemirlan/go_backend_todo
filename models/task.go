@@ -10,6 +10,7 @@ type Task struct {
 	Title       string         `json:"title"`
 	Description string         `json:"description"`
 	TaskGroupID uint           `json:"task_group_id"`
+	TaskGroup   TaskGroup      `json:"task_group" gorm:"foreignKey:TaskGroupID"`
 	StartDate   time.Time      `json:"start_date"`
 	FinishDate  time.Time      `json:"finish_date"`
 	Status      string         `json:"status"`

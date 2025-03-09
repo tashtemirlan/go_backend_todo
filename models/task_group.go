@@ -8,6 +8,7 @@ import (
 type TaskGroup struct {
 	gorm.Model
 	Name            string `json:"name" gorm:"not null"`
+	Description     string `json:"description" gorm:"not null"`
 	IconData        int    `json:"icon_data" gorm:"not null"`
 	BackgroundColor string `json:"background_color" gorm:"not null"`
 	IconColor       string `json:"icon_color" gorm:"not null"`
