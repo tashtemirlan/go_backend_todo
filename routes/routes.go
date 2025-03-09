@@ -47,5 +47,8 @@ func SetupRoutes(r *gin.Engine) {
 		apiTask.GET("/getTask/:id", controllers.GetTask)
 		apiTask.PUT("/updateTask/:id", controllers.UpdateTask)
 		apiTask.DELETE("/deleteTask/:id", controllers.DeleteTask)
+		apiTask.GET("/getTasks/todo", controllers.GetTasksByStatusTODO)
+		apiTask.GET("/getTasks/in_progress", controllers.GetTasksByStatusInProgress)
+		apiTask.GET("/getTask/finish-date", controllers.GetTasksByFinishDate)
 	}
 }

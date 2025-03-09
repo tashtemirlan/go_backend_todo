@@ -4,22 +4,6 @@ This project is a **Go (Gin) backend** for a **To-Do application** using **Postg
 
 ## 🎯 Getting Started
 
-### 🔍 Check PostgreSQL Status
-To check status of PostgreSQL is working please run :
-```
-pg_ctl status -D <path to postgre>\PostgreSQL\data
-```
-### ▶️ Start PostgreSQL
-To start work PostgreSQL please run :
-```
-pg_ctl start -D <path to postgre>\PostgreSQL\data
-```
-### 🛠️ Create the Database
-Log in to your postgres sql database and create table by running this command :
-```
-CREATE DATABASE material_todo_go;
-```
-
 ### 🏭 Project Structure
 ```
 📂 material_todo_go
