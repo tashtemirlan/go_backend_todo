@@ -134,7 +134,7 @@ func UpdateTask(c *gin.Context) {
 
 	var updatedData models.Task
 	if err := c.ShouldBindJSON(&updatedData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
 		return
 	}
 
@@ -158,8 +158,9 @@ func UpdateTask(c *gin.Context) {
 		task.FinishDate = updatedData.FinishDate
 	}
 
+	// Save updates
 	if err := database.DB.Save(&task).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update task"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update task", "details": err.Error()})
 		return
 	}
 
@@ -306,4 +307,37 @@ func GetTasksByFinishDate(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"tasks": response})
+}
+
+// GetTasksByGroupID returns all tasks for a specific task group ID
+func GetTasksByGroupID(c *gin.Context) {
+	_, valid := getUserFromToken(c)
+	if !valid {
+		return
+	}
+
+	groupID := c.Param("id")
+	var tasks []models.Task
+
+	if err := database.DB.Preload("TaskGroup").Where("task_group_id = ?", groupID).Find(&tasks).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve tasks for the given group"})
+		return
+	}
+
+	// Build the response with task group names
+	var response []map[string]interface{}
+	for _, task := range tasks {
+		response = append(response, map[string]interface{}{
+			"id":              task.ID,
+			"title":           task.Title,
+			"description":     task.Description,
+			"task_group_id":   task.TaskGroupID,
+			"task_group_name": task.TaskGroup.Name,
+			"start_date":      task.StartDate,
+			"finish_date":     task.FinishDate,
+			"status":          task.Status,
+		})
+	}
+
+	c.JSON(http.StatusOK, response)
 }
