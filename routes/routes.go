@@ -50,5 +50,6 @@ func SetupRoutes(r *gin.Engine) {
 		apiTask.GET("/getTasks/todo", controllers.GetTasksByStatusTODO)
 		apiTask.GET("/getTasks/in_progress", controllers.GetTasksByStatusInProgress)
 		apiTask.GET("/getTask/finish-date", controllers.GetTasksByFinishDate)
+		apiTask.GET("/getTaskByGroupId/:id", controllers.GetTasksByGroupID)
 	}
 }
